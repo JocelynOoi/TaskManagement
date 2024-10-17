@@ -28,22 +28,22 @@ class AppServiceProvider extends ServiceProvider
             // Send email to users who have tasks due tin 3 days
             $tasksDueSoon = Tasks::where('due_date','<=',Carbon::now()->addDays(3))
                                 ->where('due_date','>',Carbon::now())
-                                ->where('isComplete',false)
+                                ->where('isCompleted',false)
                                 ->get();
 
             // Send email to users who have tasks in Overdue
-            $taskOverDue = Task::where('due_date','<',Carbon::now())
-                                    ->where('isComplete',false)
+            $taskOverDue = Tasks::where('due_date','<',Carbon::now())
+                                    ->where('isCompleted',false)
                                     ->get();
             
-            foreach($taskDueSoon as $task){
-                $messageContent = 'Your tasks "{$task->title}" is due on {$task->due_date}. Please complete it soon!';
+            foreach($tasksDueSoon as $task){
+                $messageContent = "Your tasks \"{$task->title}\" is due on {$task->due_date}. Please complete it soon!";
                 Mail::to('jocelynooi808@gmail.com')
                 ->send(new TaskReminderMail($task,$messageContent));
             }
 
             foreach($taskOverDue as $task){
-                $messageContent = 'Your tasks "{$task->title}" was due on {$task->due_date}. Please complete it soon!';
+                $messageContent = "Your tasks \"{$task->title}\" was due on {$task->due_date}. Please complete it soon!";
                 Mail::to('jocelynooi808@gmail.com')
                 ->send(new TaskReminderMail($task,$messageContent));
             }
